@@ -78,6 +78,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <Link href="/admin/projects" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${pathname === '/admin/projects' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'}`}>
                         <Briefcase className="w-5 h-5" /> Projects
                     </Link>
+                    <Link href="/admin/clients" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${pathname === '/admin/clients' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'}`}>
+                        <Building2 className="w-5 h-5" /> Client Accounts
+                    </Link>
                     <Link href="/admin/reminders" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${pathname === '/admin/reminders' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'}`}>
                         <Bell className="w-5 h-5" /> Reminders
                     </Link>
