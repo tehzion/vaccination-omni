@@ -1,0 +1,14 @@
+{
+  "378a93fa-3dc5-4ad4-9190-1b177f82dd56": {
+    "patientName": "Mojo Digital",
+    "patientId": "123456",
+    "vaccineName": "sdda",
+    "batch": "sdas",
+    "dose": "1",
+    "date": "2026-01-27T11:36",
+    "doctorName": "Dr. Admin",
+    "clinicName": "My Clinic",
+    "verificationUrl": "http://localhost:3000/cert/verify/378a93fa-3dc5-4ad4-9190-1b177f82dd56",
+    "createdAt": "2026-01-27T11:36:46.858Z"
+  }
+}
