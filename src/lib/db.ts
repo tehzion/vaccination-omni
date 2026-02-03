@@ -7,7 +7,7 @@ export interface Project {
   invoiceAddress: string;
   contactPerson: string;
   contactEmail?: string; // Add contact email
-  status: 'active' | 'archived';
+  status: 'active' | 'archived' | 'pending_approval' | 'rejected';
   timestamp: number;
   // Project Details
   startDate?: string; // ISO date

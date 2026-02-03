@@ -5,7 +5,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/lib/db';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useForm } from 'react-hook-form';
-import { Plus, Briefcase, MapPin, User, Archive, CheckCircle, Calendar, Users } from 'lucide-react';
+import { Plus, Briefcase, MapPin, User, Archive, CheckCircle, Calendar, Users, Clock, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
 import Link from 'next/link';
 import { ClinicHeader } from '@/components/ui/ClinicHeader';
@@ -45,6 +45,26 @@ export default function ProjectsPage() {
             reset();
         } catch (e) {
             addToast('Error creating project', 'error');
+        }
+    };
+
+    const handleApprove = async (projectId: number) => {
+        try {
+            await db.projects.update(projectId, { status: 'active' });
+            addToast('Booking request approved', 'success');
+        } catch (e) {
+            addToast('Error approving request', 'error');
+        }
+    };
+
+    const handleReject = async (projectId: number) => {
+        if (confirm('Are you sure you want to reject this booking request?')) {
+            try {
+                await db.projects.update(projectId, { status: 'rejected' });
+                addToast('Booking request rejected', 'success');
+            } catch (e) {
+                addToast('Error rejecting request', 'error');
+            }
         }
     };
 
@@ -139,8 +159,62 @@ export default function ProjectsPage() {
                 </div>
             )}
 
+            {/* Pending Booking Requests */}
+            {projects?.some(p => p.status === 'pending_approval') && (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                        <Clock className="w-5 h-5 text-amber-600" />
+                        <h2 className="text-lg font-bold text-amber-900">Pending Booking Requests</h2>
+                    </div>
+                    <div className="grid grid-cols-1 gap-4">
+                        {projects?.filter(p => p.status === 'pending_approval').map((project) => (
+                            <div key={project.id} className="bg-white p-6 rounded-xl border border-amber-200">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 className="font-bold text-lg text-slate-900 mb-1">{project.name}</h3>
+                                        <p className="text-sm text-slate-500 flex items-center gap-1">
+                                            <Briefcase className="w-3 h-3" /> {project.clientName || 'No Client Info'}
+                                        </p>
+                                        {project.startDate && (
+                                            <p className="text-sm text-slate-600 flex items-center gap-1 mt-2">
+                                                <Calendar className="w-3 h-3" /> Requested: {new Date(project.startDate).toLocaleDateString()}
+                                            </p>
+                                        )}
+                                        {project.estimatedPatients && (
+                                            <p className="text-sm text-slate-600 flex items-center gap-1 mt-1">
+                                                <Users className="w-3 h-3" /> Est. {project.estimatedPatients} participants
+                                            </p>
+                                        )}
+                                    </div>
+                                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">
+                                        <Clock className="w-3 h-3" />
+                                        Pending
+                                    </span>
+                                </div>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => handleApprove(project.id!)}
+                                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition"
+                                    >
+                                        <ThumbsUp className="w-4 h-4" />
+                                        Approve
+                                    </button>
+                                    <button
+                                        onClick={() => handleReject(project.id!)}
+                                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 transition"
+                                    >
+                                        <ThumbsDown className="w-4 h-4" />
+                                        Reject
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {projects?.map((project) => (
+                {projects?.filter(p => p.status === 'active').map((project) => (
                     <Link href={`/admin/projects/${project.id}`} key={project.id} className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:border-slate-900 transition group block">
                         <div className="flex justify-between items-start mb-4">
                             <div>
