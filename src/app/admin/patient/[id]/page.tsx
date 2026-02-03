@@ -153,13 +153,24 @@ export default function PatientDetailPage({ params }: PageProps) {
         const batchNo = e.target.value;
         setValue('batch', batchNo);
 
-        const item = inventory?.find(i => i.batchNumber === batchNo);
-        if (item) {
-            setValue('vaccineName', item.vaccineName);
-            setValue('expiry', item.expiryDate);
+        if (batchNo && batchNo !== 'MANUAL') {
+            const item = inventory?.find(i => i.batchNumber === batchNo);
+            if (item) {
+                setValue('vaccineName', item.vaccineName);
+                setValue('expiry', item.expiryDate);
+
+                // Auto-calculate next appointment if interval is set
+                if (item.doseIntervalDays && item.doseIntervalDays > 0) {
+                    const today = new Date();
+                    const nextDate = new Date(today);
+                    nextDate.setDate(today.getDate() + item.doseIntervalDays);
+                    const nextDateStr = nextDate.toISOString().split('T')[0];
+                    setValue('nextAppointment', nextDateStr);
+                    addToast(`Next appointment set for ${nextDate.toLocaleDateString()} (${item.doseIntervalDays} days interval)`, 'success');
+                }
+            }
         }
     };
-
     const getSettings = async () => {
         const settings = await db.settings.get(1);
         return settings || { doctorName: 'Dr. Admin', clinicName: 'My Clinic' };

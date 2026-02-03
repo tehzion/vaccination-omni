@@ -100,6 +100,7 @@ export interface VaccineTemplate {
   expiry: string;
   site: string;
   route: string;
+  doseIntervalDays?: number; // NEW: Days until next dose
 }
 
 export interface InventoryItem {
@@ -109,6 +110,7 @@ export interface InventoryItem {
   expiryDate: string; // ISO
   count: number;
   minThreshold: number; // Default 10
+  doseIntervalDays?: number; // NEW: Days until next dose
 }
 
 export interface InvoiceRecord {
