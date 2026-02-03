@@ -4,16 +4,18 @@ import React, { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { db, Settings } from '@/lib/db';
 import { generateUUID, generateQueueNumber } from '@/lib/utils';
-import { Database, Download, Save, Eye, EyeOff } from 'lucide-react';
+import { Database, Download, Save, Eye, EyeOff, Mail, Image, Palette, Phone, MapPin, Globe } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useToast } from '@/contexts/ToastContext';
 
 export default function SettingsPage() {
     const { t } = useLanguage();
     const { addToast } = useToast();
-    const { register, handleSubmit, setValue } = useForm<Settings>();
+    const { register, handleSubmit, setValue, watch } = useForm<Settings>();
     const [showPasscode, setShowPasscode] = useState(false);
     const [showApiKey, setShowApiKey] = useState(false);
+    const [showSmtpPassword, setShowSmtpPassword] = useState(false);
+    const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
     useEffect(() => {
         db.settings.get(1).then(settings => {
@@ -23,6 +25,27 @@ export default function SettingsPage() {
                 setValue('passcode', settings.passcode);
                 setValue('openaiApiKey', settings.openaiApiKey);
                 setValue('n8nWebhookUrl', settings.n8nWebhookUrl);
+                setValue('bankName', settings.bankName);
+                setValue('bankAccount', settings.bankAccount);
+
+                // SMTP
+                setValue('smtpHost', settings.smtpHost);
+                setValue('smtpPort', settings.smtpPort);
+                setValue('smtpUser', settings.smtpUser);
+                setValue('smtpPassword', settings.smtpPassword);
+                setValue('smtpFromName', settings.smtpFromName);
+                setValue('smtpFromEmail', settings.smtpFromEmail);
+
+                // Branding
+                setValue('clinicLogo', settings.clinicLogo);
+                setValue('brandColor', settings.brandColor);
+                if (settings.clinicLogo) setLogoPreview(settings.clinicLogo);
+
+                // Contact
+                setValue('clinicAddress', settings.clinicAddress);
+                setValue('clinicPhone', settings.clinicPhone);
+                setValue('clinicEmail', settings.clinicEmail);
+                setValue('clinicWebsite', settings.clinicWebsite);
             }
         });
     }, [setValue]);
@@ -34,6 +57,28 @@ export default function SettingsPage() {
         } catch (e) {
             addToast('Failed to save settings', 'error');
         }
+    };
+
+    const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (file.size > 500000) {
+                addToast('Logo file too large (max 500KB)', 'error');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const dataUrl = reader.result as string;
+                setLogoPreview(dataUrl);
+                setValue('clinicLogo', dataUrl);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleRemoveLogo = () => {
+        setLogoPreview(null);
+        setValue('clinicLogo', undefined);
     };
 
     const handleClearData = async () => {
@@ -147,6 +192,160 @@ export default function SettingsPage() {
                         <div>
                             <label className="block text-xs font-bold text-slate-500 mb-1">Bank Account No.</label>
                             <input {...register('bankAccount')} className="w-full p-2 border border-slate-200 rounded-lg bg-white text-black focus:ring-2 focus:ring-slate-900 outline-none" placeholder="e.g. 514011223344" />
+                        </div>
+                    </div>
+
+                    {/* SMTP Configuration */}
+                    <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Mail className="w-5 h-5 text-blue-600" />
+                            <h3 className="font-bold text-slate-900">SMTP Email Configuration</h3>
+                        </div>
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-600 mb-1">SMTP Host</label>
+                                    <input {...register('smtpHost')} className="w-full p-2 border border-slate-200 rounded-lg bg-white text-black text-sm" placeholder="smtp.gmail.com" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-600 mb-1">Port</label>
+                                    <input {...register('smtpPort', { valueAsNumber: true })} type="number" className="w-full p-2 border border-slate-200 rounded-lg bg-white text-black text-sm" placeholder="587" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 mb-1">SMTP Username</label>
+                                <input {...register('smtpUser')} className="w-full p-2 border border-slate-200 rounded-lg bg-white text-black text-sm" placeholder="your-email@gmail.com" />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 mb-1">SMTP Password</label>
+                                <div className="relative">
+                                    <input
+                                        {...register('smtpPassword')}
+                                        type={showSmtpPassword ? "text" : "password"}
+                                        className="w-full p-2 border border-slate-200 rounded-lg bg-white text-black pr-10 text-sm"
+                                        placeholder="App password"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowSmtpPassword(!showSmtpPassword)}
+                                        className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                                    >
+                                        {showSmtpPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-600 mb-1">From Name</label>
+                                    <input {...register('smtpFromName')} className="w-full p-2 border border-slate-200 rounded-lg bg-white text-black text-sm" placeholder="My Clinic" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-600 mb-1">From Email</label>
+                                    <input {...register('smtpFromEmail')} type="email" className="w-full p-2 border border-slate-200 rounded-lg bg-white text-black text-sm" placeholder="noreply@clinic.com" />
+                                </div>
+                            </div>
+                            <p className="text-xs text-slate-500">Configure SMTP to send vaccination certificates via email. For Gmail, use app passwords.</p>
+                        </div>
+                    </div>
+
+                    {/* Logo & Branding */}
+                    <div className="bg-purple-50 p-4 rounded-xl border border-purple-100">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Image className="w-5 h-5 text-purple-600" />
+                            <h3 className="font-bold text-slate-900">Logo & Branding</h3>
+                        </div>
+                        <div className="space-y-3">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 mb-2">Clinic Logo</label>
+                                {logoPreview ? (
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-200">
+                                            <img src={logoPreview} alt="Logo preview" className="h-12 w-12 object-contain" />
+                                            <div className="flex-1">
+                                                <p className="text-sm font-medium text-slate-900">Logo uploaded</p>
+                                                <p className="text-xs text-slate-500">Will appear on certificates and invoices</p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={handleRemoveLogo}
+                                                className="px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <input
+                                            type="file"
+                                            accept="image/png,image/jpeg,image/svg+xml"
+                                            onChange={handleLogoUpload}
+                                            className="w-full p-2 border border-slate-200 rounded-lg bg-white text-black text-sm"
+                                        />
+                                        <p className="text-xs text-slate-500 mt-1">PNG, JPG, or SVG (max 500KB)</p>
+                                    </div>
+                                )}
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 mb-1 flex items-center gap-1">
+                                    <Palette className="w-3 h-3" />
+                                    Brand Color
+                                </label>
+                                <div className="flex gap-2">
+                                    <input
+                                        {...register('brandColor')}
+                                        type="color"
+                                        className="h-10 w-16 border border-slate-200 rounded-lg cursor-pointer"
+                                    />
+                                    <input
+                                        {...register('brandColor')}
+                                        type="text"
+                                        className="flex-1 p-2 border border-slate-200 rounded-lg bg-white text-black text-sm font-mono"
+                                        placeholder="#3B82F6"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Contact Information */}
+                    <div className="bg-green-50 p-4 rounded-xl border border-green-100">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Phone className="w-5 h-5 text-green-600" />
+                            <h3 className="font-bold text-slate-900">Contact Information</h3>
+                        </div>
+                        <div className="space-y-3">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 mb-1 flex items-center gap-1">
+                                    <MapPin className="w-3 h-3" />
+                                    Clinic Address
+                                </label>
+                                <textarea {...register('clinicAddress')} rows={2} className="w-full p-2 border border-slate-200 rounded-lg bg-white text-black text-sm" placeholder="123 Medical Street, Kuala Lumpur" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-600 mb-1 flex items-center gap-1">
+                                        <Phone className="w-3 h-3" />
+                                        Phone Number
+                                    </label>
+                                    <input {...register('clinicPhone')} className="w-full p-2 border border-slate-200 rounded-lg bg-white text-black text-sm" placeholder="+60 3-1234 5678" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-600 mb-1 flex items-center gap-1">
+                                        <Mail className="w-3 h-3" />
+                                        Contact Email
+                                    </label>
+                                    <input {...register('clinicEmail')} type="email" className="w-full p-2 border border-slate-200 rounded-lg bg-white text-black text-sm" placeholder="info@clinic.com" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 mb-1 flex items-center gap-1">
+                                    <Globe className="w-3 h-3" />
+                                    Website URL
+                                </label>
+                                <input {...register('clinicWebsite')} type="url" className="w-full p-2 border border-slate-200 rounded-lg bg-white text-black text-sm" placeholder="https://myclinic.com" />
+                            </div>
+                            <p className="text-xs text-slate-500">Contact information will appear on invoices and certificates.</p>
                         </div>
                     </div>
                     <div className="pt-2">

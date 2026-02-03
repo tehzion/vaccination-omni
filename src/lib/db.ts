@@ -72,6 +72,24 @@ export interface Settings {
   n8nWebhookUrl?: string;
   bankName?: string;
   bankAccount?: string;
+
+  // SMTP Configuration
+  smtpHost?: string;        // e.g., smtp.gmail.com
+  smtpPort?: number;        // e.g., 587
+  smtpUser?: string;        // SMTP username/email
+  smtpPassword?: string;    // SMTP password/app password
+  smtpFromName?: string;    // Display name for outgoing emails
+  smtpFromEmail?: string;   // From email address
+
+  // Logo & Branding
+  clinicLogo?: string;      // Base64 encoded image data URL
+  brandColor?: string;      // Hex color code (e.g., #3B82F6)
+
+  // Contact Information
+  clinicAddress?: string;   // Physical address
+  clinicPhone?: string;     // Contact phone number
+  clinicEmail?: string;     // General contact email
+  clinicWebsite?: string;   // Website URL
 }
 
 export interface VaccineTemplate {
