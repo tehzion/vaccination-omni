@@ -5,8 +5,10 @@ import { useClientAuth } from '@/contexts/ClientAuthContext';
 import { useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/lib/db';
-import { ArrowLeft, Users, CheckCircle, FileText, Download } from 'lucide-react';
+import { ArrowLeft, Users, CheckCircle, FileText, Download, FileDown } from 'lucide-react';
 import Link from 'next/link';
+import { generateCertificatePDF } from '@/lib/pdfGenerator';
+import JSZip from 'jszip';
 
 export default function ClientProjectPage({ params }: { params: { projectId: string } }) {
     const { client, isAuthenticated, isLoading } = useClientAuth();
@@ -65,6 +67,57 @@ export default function ClientProjectPage({ params }: { params: { projectId: str
     const completedPatients = patients?.filter(p => p.status === 'completed').length || 0;
     const totalInvoiced = invoices?.reduce((sum, inv) => sum + inv.amount, 0) || 0;
 
+    const handleDownloadCertificate = async (certificateId: string, patientName: string) => {
+        try {
+            const response = await fetch(`/api/certificates?id=${certificateId}`);
+            if (!response.ok) {
+                alert('Certificate not found');
+                return;
+            }
+            const cert = await response.json();
+            const bytes = await generateCertificatePDF(cert);
+            const blob = new Blob([bytes], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Certificate-${patientName}.pdf`;
+            link.click();
+        } catch (error) {
+            console.error('Error downloading certificate:', error);
+            alert('Failed to download certificate');
+        }
+    };
+
+    const handleDownloadAllCertificates = async () => {
+        const completedWithCerts = patients?.filter(p => p.status === 'completed' && p.certificateId) || [];
+
+        if (completedWithCerts.length === 0) {
+            alert('No certificates available to download');
+            return;
+        }
+
+        try {
+            const zip = new JSZip();
+
+            for (const patient of completedWithCerts) {
+                const response = await fetch(`/api/certificates?id=${patient.certificateId}`);
+                if (response.ok) {
+                    const cert = await response.json();
+                    const bytes = await generateCertificatePDF(cert);
+                    zip.file(`Certificate-${patient.fullName}.pdf`, bytes);
+                }
+            }
+
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(zipBlob);
+            link.download = `${project?.name || 'Project'}-Certificates.zip`;
+            link.click();
+        } catch (error) {
+            console.error('Error creating ZIP:', error);
+            alert('Failed to download certificates');
+        }
+    };
+
     return (
         <div className="min-h-screen bg-slate-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -98,10 +151,21 @@ export default function ClientProjectPage({ params }: { params: { projectId: str
 
                 {/* Patient List - Limited Info */}
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-                    <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                        <Users className="w-5 h-5" />
-                        Vaccinated Patients
-                    </h2>
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <Users className="w-5 h-5" />
+                            Vaccinated Patients
+                        </h2>
+                        {patients && patients.filter(p => p.status === 'completed' && p.certificateId).length > 0 && (
+                            <button
+                                onClick={handleDownloadAllCertificates}
+                                className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg font-bold hover:bg-neutral-800 transition"
+                            >
+                                <FileDown className="w-4 h-4" />
+                                Download All Certificates
+                            </button>
+                        )}
+                    </div>
                     {!patients || patients.filter(p => p.status === 'completed').length === 0 ? (
                         <div className="text-center py-8 text-slate-400">
                             No completed vaccinations yet
@@ -115,6 +179,7 @@ export default function ClientProjectPage({ params }: { params: { projectId: str
                                         <th className="pb-3 text-xs font-bold text-slate-700 uppercase">Vaccination Date</th>
                                         <th className="pb-3 text-xs font-bold text-slate-700 uppercase">Certificate ID</th>
                                         <th className="pb-3 text-xs font-bold text-slate-700 uppercase">Dose</th>
+                                        <th className="pb-3 text-xs font-bold text-slate-700 uppercase text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -131,6 +196,18 @@ export default function ClientProjectPage({ params }: { params: { projectId: str
                                                 {patient.certificateId || '—'}
                                             </td>
                                             <td className="py-3 text-sm text-slate-600">Dose {patient.dose}</td>
+                                            <td className="py-3 text-right">
+                                                {patient.certificateId && (
+                                                    <button
+                                                        onClick={() => handleDownloadCertificate(patient.certificateId!, patient.fullName)}
+                                                        className="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                                                        title="Download Certificate"
+                                                    >
+                                                        <Download className="w-3 h-3" />
+                                                        Download
+                                                    </button>
+                                                )}
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
