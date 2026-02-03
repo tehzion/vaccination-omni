@@ -130,7 +130,7 @@ export default function AdminClientsPage() {
 
                                 <div className="border-t border-slate-200 pt-4">
                                     <div className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                                        Linked Projects ({linkedProjects.length})
+                                        Linked Drives ({linkedProjects.length})
                                     </div>
                                     {linkedProjects.length > 0 ? (
                                         <div className="space-y-1">
@@ -146,7 +146,7 @@ export default function AdminClientsPage() {
                                     )}
 
                                     <div className="mt-3">
-                                        <label className="block text-xs font-bold text-slate-700 mb-1">Link New Project</label>
+                                        <label className="block text-xs font-bold text-slate-700 mb-1">Link New Drive</label>
                                         <select
                                             onChange={(e) => handleLinkProject(client.id!, e.target.value ? parseInt(e.target.value) : undefined)}
                                             className="w-full p-2 text-sm border border-slate-300 rounded-lg bg-white text-black"

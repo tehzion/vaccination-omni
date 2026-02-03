@@ -70,23 +70,23 @@ export default function ProjectsPage() {
 
     return (
         <div className="space-y-6 pb-20">
-            <ClinicHeader pageTitle="Projects & Organizations" subtitle="Manage vaccination projects and invoicing" />
+            <ClinicHeader pageTitle="Vaccination Drives" subtitle="Manage vaccination drives and invoicing" />
             <div className="flex justify-between items-center">
                 <button
                     onClick={() => setIsCreating(!isCreating)}
                     className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-neutral-800 transition"
                 >
-                    <Plus className="w-4 h-4" /> New Project
+                    <Plus className="w-4 h-4" /> New Drive
                 </button>
             </div>
 
             {isCreating && (
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                    <h2 className="font-bold text-lg mb-4">Create New Project</h2>
+                    <h2 className="font-bold text-lg mb-4">Create New Drive</h2>
                     <form onSubmit={handleSubmit(onCreate)} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Project/Trip Name *</label>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Drive/Trip Name *</label>
                                 <input {...register('name', { required: true })} className="w-full p-2 border rounded-lg bg-white text-black" placeholder="e.g. Annual Health Screening 2024" />
                             </div>
                             <div>
@@ -110,7 +110,7 @@ export default function ProjectsPage() {
                             <div className="md:col-span-2 border-t pt-4 mt-2">
                                 <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
                                     <Calendar className="w-4 h-4" />
-                                    Project Details
+                                    Drive Details
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
@@ -153,7 +153,7 @@ export default function ProjectsPage() {
                         </div>
                         <div className="flex gap-2 justify-end">
                             <button type="button" onClick={() => setIsCreating(false)} className="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg font-bold">Cancel</button>
-                            <button type="submit" className="px-6 py-2 bg-slate-900 text-white rounded-lg hover:bg-black font-bold">Create Project</button>
+                            <button type="submit" className="px-6 py-2 bg-slate-900 text-white rounded-lg hover:bg-black font-bold">Create Drive</button>
                         </div>
                     </form>
                 </div>

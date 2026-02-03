@@ -11,8 +11,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Vaccine Manager",
-  description: "Secure, local-first vaccination management PWA.",
+  title: "OmniVax",
+  description: "Secure, local-first vaccination management for Malaysia.",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.svg",

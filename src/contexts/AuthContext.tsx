@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             // Fallback for first run race condition if on('populate') hasn't fired yet
             if (!settings) {
-                settings = { id: 1, doctorName: 'Dr. Admin', clinicName: 'My Clinic', passcode: '1234' };
+                settings = { id: 1, doctorName: 'Dr. Admin', clinicName: 'OmniVax', passcode: '1234' };
                 await db.settings.put(settings);
             }
 

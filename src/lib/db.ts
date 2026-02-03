@@ -118,6 +118,9 @@ export interface InvoiceRecord {
   projectId: number;
   invoiceNumber: string;
   clientName: string;
+  clientAddress?: string; // Snapshot of address
+  clientContact?: string; // Snapshot of contact person
+  clientEmail?: string;   // Snapshot of email
   amount: number;
   date: string; // ISO
   itemsJson: string; // Serialized InvoiceItem[]
@@ -182,13 +185,17 @@ export class VaccineDatabase extends Dexie {
 export const db = new VaccineDatabase();
 
 // Initialize default settings if empty
-db.on('populate', () => {
-  db.settings.add({
-    id: 1,
-    doctorName: 'Dr. Admin',
-    clinicName: 'My Clinic',
-    passcode: '1234'
-  });
+db.on('populate', async () => {
+  const count = await db.settings.count();
+  if (count === 0) {
+    await db.settings.add({
+      id: 1,
+      doctorName: 'Dr. Admin',
+      clinicName: 'OmniVax',
+      passcode: '1234',
+      openaiApiKey: ''
+    });
+  }
 });
 
 // Password utility for creating client accounts

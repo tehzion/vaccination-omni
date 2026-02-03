@@ -173,7 +173,7 @@ export default function PatientDetailPage({ params }: PageProps) {
     };
     const getSettings = async () => {
         const settings = await db.settings.get(1);
-        return settings || { doctorName: 'Dr. Admin', clinicName: 'My Clinic' };
+        return settings || { doctorName: 'Dr. Admin', clinicName: 'OmniVax' };
     };
 
     const generateCertData = async () => {

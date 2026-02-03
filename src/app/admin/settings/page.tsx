@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { db, Settings } from '@/lib/db';
+import { exportAllData, downloadJSON } from '@/lib/exportToJSON';
 import { generateUUID, generateQueueNumber } from '@/lib/utils';
 import { Database, Download, Save, Eye, EyeOff, Mail, Image, Palette, Phone, MapPin, Globe } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -86,9 +87,19 @@ export default function SettingsPage() {
             await db.delete();
             await db.open();
             // Restore default settings
-            await db.settings.put({ id: 1, doctorName: 'Dr. Admin', clinicName: 'My Clinic', passcode: '1234' });
+            await db.settings.put({ id: 1, doctorName: 'Dr. Admin', clinicName: 'OmniVax', passcode: '1234' });
             alert('Database cleared.');
             window.location.reload();
+        }
+    };
+
+    const handleExportData = async () => {
+        try {
+            const data = await exportAllData();
+            downloadJSON(data, `vaccine_db_export_${new Date().toISOString().slice(0, 10)}.json`);
+            addToast('Data exported successfully', 'success');
+        } catch (e) {
+            addToast('Failed to export data', 'error');
         }
     };
 
@@ -237,7 +248,7 @@ export default function SettingsPage() {
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className="block text-xs font-bold text-slate-600 mb-1">From Name</label>
-                                    <input {...register('smtpFromName')} className="w-full p-2 border border-slate-200 rounded-lg bg-white text-black text-sm" placeholder="My Clinic" />
+                                    <input {...register('smtpFromName')} className="w-full p-2 border border-slate-200 rounded-lg bg-white text-black text-sm" placeholder="OmniVax" />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold text-slate-600 mb-1">From Email</label>
@@ -361,6 +372,16 @@ export default function SettingsPage() {
                 <h2 className="font-bold text-lg mb-4">Data Management</h2>
 
                 <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-100">
+                        <div>
+                            <h3 className="font-bold text-blue-900">Export Database (Migration)</h3>
+                            <p className="text-sm text-blue-600">Download full database JSON for Supabase migration</p>
+                        </div>
+                        <button onClick={handleExportData} className="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg flex items-center gap-2 hover:bg-blue-700 transition">
+                            <Download className="w-4 h-4" /> Export JSON
+                        </button>
+                    </div>
+
                     <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
                         <div>
                             <h3 className="font-bold text-slate-700">Export Data</h3>

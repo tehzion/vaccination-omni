@@ -24,7 +24,7 @@ export async function POST(request: Request) {
         });
 
         const mailOptions: any = {
-            from: process.env.SMTP_FROM || '"My Clinic" <noreply@myclinic.com>',
+            from: process.env.SMTP_FROM || '"OmniVax" <noreply@omnivax.my>',
             to,
             subject,
             text,

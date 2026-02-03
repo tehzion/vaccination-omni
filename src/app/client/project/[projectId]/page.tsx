@@ -54,7 +54,7 @@ export default function ClientProjectPage({ params }: { params: { projectId: str
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold text-slate-900 mb-2">Project Not Found</h1>
+                    <h1 className="text-2xl font-bold text-slate-900 mb-2">Drive Not Found</h1>
                     <p className="text-slate-600 mb-4">You don't have access to this project.</p>
                     <Link href="/client/dashboard" className="text-blue-600 hover:underline">
                         ← Back to Dashboard
@@ -76,7 +76,7 @@ export default function ClientProjectPage({ params }: { params: { projectId: str
             }
             const cert = await response.json();
             const bytes = await generateCertificatePDF(cert);
-            const blob = new Blob([bytes], { type: 'application/pdf' });
+            const blob = new Blob([bytes as any], { type: 'application/pdf' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = `Certificate-${patientName}.pdf`;
@@ -109,8 +109,8 @@ export default function ClientProjectPage({ params }: { params: { projectId: str
 
             const zipBlob = await zip.generateAsync({ type: 'blob' });
             const link = document.createElement('a');
-            link.href = URL.createObjectURL(zipBlob);
-            link.download = `${project?.name || 'Project'}-Certificates.zip`;
+            link.href = URL.createObjectURL(zipBlob as any);
+            link.download = `${project?.name || 'Drive'}-Certificates.zip`;
             link.click();
         } catch (error) {
             console.error('Error creating ZIP:', error);

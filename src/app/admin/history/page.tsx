@@ -33,7 +33,7 @@ export default function HistoryPage() {
 
         // Filter in memory (Dexie limitation for complex multi-field filtering without compound indices)
         return collection.filter(c => {
-            // Project Filter
+            // Drive Filter
             if (selectedProject !== 'all' && c.projectId !== selectedProject) return false;
 
             // Date Filter
@@ -62,7 +62,7 @@ export default function HistoryPage() {
     const handleExport = () => {
         if (!records) return;
         const csvContent = "data:text/csv;charset=utf-8,"
-            + "Date,Time,Project,Name,MyKad,Vaccine,Batch,Site,Route,Status\n"
+            + "Date,Time,Drive,Name,MyKad,Vaccine,Batch,Site,Route,Status\n"
             + records.map(e => {
                 const date = new Date(e.timestamp);
                 const project = e.projectId ? projectMap[e.projectId] || 'Unknown' : 'Walk-in';
@@ -111,7 +111,7 @@ export default function HistoryPage() {
                         value={selectedProject}
                         onChange={(e) => setSelectedProject(e.target.value === 'all' ? 'all' : Number(e.target.value))}
                     >
-                        <option value="all">All Projects</option>
+                        <option value="all">All Drives</option>
                         {projects?.map(p => (
                             <option key={p.id} value={p.id}>{p.name}</option>
                         ))}
@@ -145,7 +145,7 @@ export default function HistoryPage() {
                         <thead className="bg-slate-50 border-b border-slate-200">
                             <tr>
                                 <th className="px-6 py-4 font-bold text-slate-700 whitespace-nowrap">Date</th>
-                                <th className="px-6 py-4 font-bold text-slate-700 whitespace-nowrap">Project</th>
+                                <th className="px-6 py-4 font-bold text-slate-700 whitespace-nowrap">Drive</th>
                                 <th className="px-6 py-4 font-bold text-slate-700">Patient</th>
                                 <th className="px-6 py-4 font-bold text-slate-700">Vaccine</th>
                                 <th className="px-6 py-4 font-bold text-slate-700">Action</th>
@@ -166,7 +166,7 @@ export default function HistoryPage() {
                                     <td className="px-6 py-4">
                                         {r.projectId ? (
                                             <span className="inline-flex items-center px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
-                                                {projectMap[r.projectId] || 'Unknown Project'}
+                                                {projectMap[r.projectId] || 'Unknown Drive'}
                                             </span>
                                         ) : (
                                             <span className="text-slate-400 text-xs italic">Walk-in</span>

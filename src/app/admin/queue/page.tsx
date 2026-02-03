@@ -224,13 +224,13 @@ export default function AdminQueuePage() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-bold text-slate-700 mb-2">Assign to Project (Optional)</label>
+                            <label className="block text-sm font-bold text-slate-700 mb-2">Assign to Drive (Optional)</label>
                             <select
                                 value={selectedProject || ''}
                                 onChange={(e) => setSelectedProject(e.target.value ? Number(e.target.value) : undefined)}
                                 className="w-full p-2 border rounded-lg bg-white text-black"
                             >
-                                <option value="">-- No Project (Walk-in) --</option>
+                                <option value="">-- No Drive (Walk-in) --</option>
                                 {projects?.map(p => (
                                     <option key={p.id} value={p.id}>{p.name} ({p.clientName})</option>
                                 ))}

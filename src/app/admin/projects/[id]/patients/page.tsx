@@ -63,7 +63,7 @@ export default function ProjectPatientsPage({ params }: PageProps) {
             <div className="flex items-center justify-between">
                 <Link href={`/admin/projects/${projectId}`} className="flex items-center gap-2 text-slate-600 hover:text-black font-bold transition">
                     <ArrowLeft className="w-4 h-4" />
-                    Back to Project
+                    Back to Drive
                 </Link>
 
                 <div className="flex items-center gap-4 text-sm">
@@ -113,12 +113,12 @@ export default function ProjectPatientsPage({ params }: PageProps) {
                         onClick={handleExport}
                         disabled={filteredPatients.length === 0}
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition ${filteredPatients.length === 0
-                                ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                                : exportStatus === 'success'
-                                    ? 'bg-green-700 text-white'
-                                    : exportStatus === 'error'
-                                        ? 'bg-red-600 text-white'
-                                        : 'bg-green-600 text-white hover:bg-green-700'
+                            ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                            : exportStatus === 'success'
+                                ? 'bg-green-700 text-white'
+                                : exportStatus === 'error'
+                                    ? 'bg-red-600 text-white'
+                                    : 'bg-green-600 text-white hover:bg-green-700'
                             }`}
                     >
                         {exportStatus === 'success' ? (

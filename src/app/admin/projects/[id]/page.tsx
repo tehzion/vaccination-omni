@@ -32,6 +32,8 @@ export default function ProjectDetailPage({ params }: PageProps) {
     const [invoiceForm, setInvoiceForm] = useState({
         clientName: '',
         clientAddress: '',
+        clientContact: '',
+        clientEmail: '',
         invoiceNumber: '',
         date: '',
         items: [] as { description: string; quantity: number; unitPrice: number }[]
@@ -63,7 +65,7 @@ export default function ProjectDetailPage({ params }: PageProps) {
         if (win) {
             win.document.write(`
                 <html>
-                    <head><title>Project QR</title></head>
+                    <head><title>Drive QR</title></head>
                     <body style="text-align: center; font-family: sans-serif; padding: 50px;">
                         <h1>${project?.name}</h1>
                         <p>Scan to Check In</p>
@@ -83,6 +85,8 @@ export default function ProjectDetailPage({ params }: PageProps) {
         setInvoiceForm({
             clientName: project.clientName,
             clientAddress: project.invoiceAddress || '',
+            clientContact: project.contactPerson || '',
+            clientEmail: project.contactEmail || '',
             invoiceNumber: `INV-${projectId}-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}`,
             date: new Date().toLocaleDateString(),
             items: [
@@ -108,7 +112,7 @@ export default function ProjectDetailPage({ params }: PageProps) {
         const pdfBytes = await generateInvoicePDF({
             invoiceNumber: invoiceForm.invoiceNumber,
             date: invoiceForm.date,
-            myClinicName: settings?.clinicName || 'My Clinic',
+            myClinicName: settings?.clinicName || 'OmniVax',
             myClinicAddress: settings?.doctorName ? `Dr. ${settings.doctorName}` : 'Main Branch',
             bankName: settings?.bankName || 'Maybank',
             bankAccount: settings?.bankAccount || '5140-1122-3344',
@@ -124,6 +128,9 @@ export default function ProjectDetailPage({ params }: PageProps) {
                 projectId: project.id!,
                 invoiceNumber: invoiceForm.invoiceNumber,
                 clientName: invoiceForm.clientName,
+                clientAddress: invoiceForm.clientAddress,
+                clientContact: invoiceForm.clientContact,
+                clientEmail: invoiceForm.clientEmail,
                 amount: total,
                 date: new Date().toISOString(),
                 itemsJson: JSON.stringify(itemsWithTotal)
@@ -189,7 +196,7 @@ export default function ProjectDetailPage({ params }: PageProps) {
                         onClick={handleDeleteProject}
                         className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2 text-sm font-bold transition outline-none"
                     >
-                        <Trash2 className="w-4 h-4" /> Delete Project
+                        <Trash2 className="w-4 h-4" /> Delete Drive
                     </button>
                 </div>
             </div>
@@ -205,7 +212,7 @@ export default function ProjectDetailPage({ params }: PageProps) {
 
                     <div className="flex flex-col items-center gap-4 py-4 bg-slate-50 rounded-lg border border-slate-100">
                         {qrDataUrl ? (
-                            <img src={qrDataUrl} alt="Project QR" className="w-48 h-48 mix-blend-multiply" />
+                            <img src={qrDataUrl} alt="Drive QR" className="w-48 h-48 mix-blend-multiply" />
                         ) : (
                             <div className="w-48 h-48 bg-slate-200 animate-pulse rounded" />
                         )}

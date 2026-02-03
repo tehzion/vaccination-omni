@@ -79,7 +79,7 @@ export default function AdminDashboard() {
                 <div className="lg:col-span-2 bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
                     <div className="flex justify-between items-center mb-8">
                         <div>
-                            <h2 className="text-xl font-bold text-slate-900">Project Performance</h2>
+                            <h2 className="text-xl font-bold text-slate-900">Drive Performance</h2>
                             <p className="text-sm text-slate-500 font-medium">Revenue by campaign</p>
                         </div>
                         <div className="bg-slate-50 px-3 py-1 rounded-full text-[10px] font-bold text-slate-400 flex items-center gap-2 border border-slate-100">

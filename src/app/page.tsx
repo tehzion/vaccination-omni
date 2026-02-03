@@ -16,7 +16,7 @@ export default function Home() {
           <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center">
             <ShieldCheck className="text-white w-6 h-6" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tighter">Vaccine<span className="text-neutral-400 font-normal">Manager</span></h1>
+          <h1 className="text-2xl font-bold tracking-tighter">Omni<span className="text-neutral-400 font-normal">Vax</span></h1>
         </div>
       </header>
 
@@ -82,7 +82,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="p-10 border-t border-neutral-100 mt-12 flex flex-col md:flex-row justify-between items-center gap-6 text-neutral-400 text-sm font-medium">
-        <p>© 2026 Vaccination Omni. Built for speed.</p>
+        <p>© 2026 OmniVax. Built for speed.</p>
         <div className="flex gap-8">
           <Link href="/admin/login" className="hover:text-black transition-colors">Admin Portal</Link>
           <Link href="/checkin" className="hover:text-black transition-colors">Queue System</Link>

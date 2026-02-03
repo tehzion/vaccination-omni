@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, Briefcase, ChevronRight, History, Home, LogOut, Menu, Settings, Users, X, Package, Sparkles } from 'lucide-react';
+import { Bell, Briefcase, ChevronRight, History, Home, LogOut, Menu, Settings, Users, X, Package, Sparkles, Building2 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, logout } = useAuth();
@@ -32,7 +32,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const navItems = [
         { href: '/admin/queue', label: t.queue, icon: Users },
         { href: '/admin/reminders', label: 'Reminders', icon: Bell },
-        { href: '/admin/projects', label: 'Projects', icon: Briefcase }, // Added
+        { href: '/admin/projects', label: 'Vaccination Drives', icon: Briefcase }, // Added
         { href: '/admin/history', label: t.history, icon: History },
         { href: '/admin/settings', label: t.settings, icon: Settings },
     ];
