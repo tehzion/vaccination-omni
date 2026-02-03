@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, hashPassword } from '@/lib/db';
-import { Modal, InputModal } from '@/components/ui/Modals';
-import { UserPlus, Building2, Mail, Trash2, Edit, Key } from 'lucide-react';
+import { ClinicHeader } from '@/components/ui/ClinicHeader';
+import { Modal } from '@/components/ui/Modals';
+import { Plus, Building2, Mail, Trash2, Edit, Key, User, UserPlus } from 'lucide-react';
 
 export default function AdminClientsPage() {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [formData, setFormData] = useState({
+        type: 'company' as 'company' | 'individual',
         name: '',
         email: '',
         company: '',
@@ -19,8 +21,14 @@ export default function AdminClientsPage() {
     const projects = useLiveQuery(() => db.projects.toArray());
 
     const handleCreate = async () => {
-        if (!formData.name || !formData.email || !formData.password || !formData.company) {
-            alert('Please fill in all fields');
+        // Validate based on type
+        if (!formData.name || !formData.email || !formData.password) {
+            alert('Please fill in all required fields');
+            return;
+        }
+
+        if (formData.type === 'company' && !formData.company) {
+            alert('Please enter company name');
             return;
         }
 
@@ -32,14 +40,15 @@ export default function AdminClientsPage() {
         }
 
         await db.clientAccounts.add({
+            type: formData.type,
             name: formData.name,
             email: formData.email.toLowerCase(),
-            company: formData.company,
+            company: formData.type === 'company' ? formData.company : undefined,
             password: hashPassword(formData.password),
             createdAt: Date.now()
         });
 
-        setFormData({ name: '', email: '', company: '', password: '' });
+        setFormData({ type: 'company', name: '', email: '', company: '', password: '' });
         setShowCreateModal(false);
     };
 
@@ -88,8 +97,23 @@ export default function AdminClientsPage() {
                             <div key={client.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
-                                        <h3 className="text-lg font-bold text-slate-900">{client.name}</h3>
-                                        <p className="text-sm text-slate-600">{client.company}</p>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <h3 className="text-lg font-bold text-slate-900">{client.name}</h3>
+                                            {client.type === 'company' ? (
+                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">
+                                                    <Building2 className="w-3 h-3" />
+                                                    Company
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">
+                                                    <User className="w-3 h-3" />
+                                                    Individual
+                                                </span>
+                                            )}
+                                        </div>
+                                        {client.type === 'company' && client.company && (
+                                            <p className="text-sm text-slate-600">{client.company}</p>
+                                        )}
                                         <p className="text-xs text-slate-500 flex items-center gap-1 mt-1">
                                             <Mail className="w-3 h-3" />
                                             {client.email}
@@ -157,27 +181,62 @@ export default function AdminClientsPage() {
             {/* Create Modal */}
             <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} title="Create Client Account">
                 <div className="space-y-4">
+                    {/* Client Type Selection */}
                     <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2">Business Owner Name</label>
+                        <label className="block text-sm font-bold text-slate-700 mb-3">Client Type</label>
+                        <div className="flex gap-4">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="clientType"
+                                    value="company"
+                                    checked={formData.type === 'company'}
+                                    onChange={(e) => setFormData({ ...formData, type: 'company' })}
+                                    className="w-4 h-4"
+                                />
+                                <Building2 className="w-4 h-4 text-green-600" />
+                                <span className="font-medium text-slate-700">Company</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="clientType"
+                                    value="individual"
+                                    checked={formData.type === 'individual'}
+                                    onChange={(e) => setFormData({ ...formData, type: 'individual' })}
+                                    className="w-4 h-4"
+                                />
+                                <User className="w-4 h-4 text-blue-600" />
+                                <span className="font-medium text-slate-700">Individual</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">
+                            {formData.type === 'company' ? 'Business Owner Name' : 'Full Name'}
+                        </label>
                         <input
                             type="text"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                             className="w-full p-3 border border-slate-300 rounded-lg bg-white text-black font-medium"
-                            placeholder="John Doe"
+                            placeholder={formData.type === 'company' ? 'John Doe' : 'Jane Smith'}
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2">Company Name</label>
-                        <input
-                            type="text"
-                            value={formData.company}
-                            onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                            className="w-full p-3 border border-slate-300 rounded-lg bg-white text-black font-medium"
-                            placeholder="ABC Corporation"
-                        />
-                    </div>
+                    {formData.type === 'company' && (
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2">Company Name *</label>
+                            <input
+                                type="text"
+                                value={formData.company}
+                                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                                className="w-full p-3 border border-slate-300 rounded-lg bg-white text-black font-medium"
+                                placeholder="ABC Corporation"
+                            />
+                        </div>
+                    )}
 
                     <div>
                         <label className="block text-sm font-bold text-slate-700 mb-2">Email Address</label>

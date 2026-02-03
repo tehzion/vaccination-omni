@@ -5,7 +5,7 @@ import { useClientAuth } from '@/contexts/ClientAuthContext';
 import { useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/lib/db';
-import { LogOut, Building2, Users, CheckCircle, DollarSign, FileText, Calendar, Plus, Clock } from 'lucide-react';
+import { LogOut, Building2, Users, CheckCircle, DollarSign, FileText, Calendar, Plus, Clock, User } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ClientDashboardPage() {
@@ -75,11 +75,21 @@ export default function ClientDashboardPage() {
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                                <Building2 className="w-5 h-5 text-white" />
+                                {client.type === 'company' ? (
+                                    <Building2 className="w-5 h-5 text-white" />
+                                ) : (
+                                    <User className="w-5 h-5 text-white" />
+                                )}
                             </div>
                             <div>
-                                <h1 className="text-xl font-bold text-slate-900">{client.name}</h1>
-                                <p className="text-sm text-slate-500">{client.company}</p>
+                                {client.type === 'company' ? (
+                                    <>
+                                        <h1 className="text-xl font-bold text-slate-900">{client.company || client.name}</h1>
+                                        <p className="text-sm text-slate-500">{client.name}</p>
+                                    </>
+                                ) : (
+                                    <h1 className="text-xl font-bold text-slate-900">{client.name}</h1>
+                                )}
                             </div>
                         </div>
                         <div className="flex items-center gap-3">

@@ -105,10 +105,11 @@ export interface InvoiceRecord {
 
 export interface ClientAccount {
   id?: number;
+  type: 'company' | 'individual'; // Client type
   email: string; // Unique login email
   password: string; // Hashed password (simple hash for MVP)
-  name: string; // Business owner name
-  company: string; // Company name
+  name: string; // Business owner name OR individual's full name
+  company?: string; // Optional: Company name (only for type='company')
   createdAt: number; // Timestamp
   lastLogin?: number; // Timestamp
 }
